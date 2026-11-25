@@ -1,0 +1,52 @@
+---
+// Chalk pose skeleton signing; glosses appear one by one, then the Arabic sentence.
+const hand = [[0, -16], [-9, -13], [9, -14], [-14, -4], [14, -6]]; // fingertip offsets from wrist
+---
+
+<svg viewBox="0 0 400 210" class="sign-scene block h-full w-full" fill="none" aria-hidden="true" data-draw>
+  <rect width="400" height="210" fill="#13201c" />
+  <text x="16" y="24" fill="#7A8F85" font-family="JetBrains Mono, monospace" font-size="10.5" letter-spacing="1">POSE KEYPOINTS</text>
+  <text x="246" y="24" fill="#7A8F85" font-family="JetBrains Mono, monospace" font-size="10.5" letter-spacing="1">GLOSSES</text>
+
+  <!-- body -->
+  <g stroke="#E8EFE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="110" cy="62" r="18" stroke-opacity="0.8" />
+    <path d="M110 80 V100 M72 102 H148 M80 102 L88 196 M140 102 L132 196" stroke-opacity="0.7" />
+    <path d="M72 102 L54 146 L84 132" stroke-opacity="0.7" />
+    <path d="M148 102 L180 126" stroke-opacity="0.7" />
+  </g>
+  <!-- signing arm: rotates around the elbow -->
+  <g class="sign-arm">
+    <path d="M180 126 L168 78" stroke="#E8EFE9" stroke-opacity="0.8" stroke-width="2" stroke-linecap="round" />
+    <g stroke="#F2D06B" stroke-width="1.4" stroke-linecap="round">
+      {hand.map(([dx, dy]) => <path d={`M168 78 l${dx} ${dy}`} />)}
+    </g>
+    {hand.map(([dx, dy]) => <circle cx={168 + dx} cy={78 + dy} r="2.4" fill="#F2D06B" />)}
+    <circle cx="168" cy="78" r="3.4" fill="#F2D06B" />
+  </g>
+  <!-- joints -->
+  <g fill="#E8EFE9">
+    {[[110, 100], [72, 102], [148, 102], [54, 146], [84, 132], [180, 126], [88, 196], [132, 196]].map(([x, y]) => (
+      <circle cx={x} cy={y} r="3" />
+    ))}
+  </g>
+
+  <!-- attention from the hand to each gloss -->
+  <g stroke="#F2D06B" stroke-opacity="0.45" stroke-width="1.2" stroke-dasharray="1 0">
+    <path class="draw" pathLength="1" d="M172 70 C 210 50, 220 46, 244 46" style="--d: 300ms; --dur: 0.6s" />
+    <path class="draw" pathLength="1" d="M172 74 C 210 78, 222 82, 244 82" style="--d: 800ms; --dur: 0.6s" />
+    <path class="draw" pathLength="1" d="M172 78 C 206 104, 222 118, 244 118" style="--d: 1300ms; --dur: 0.6s" />
+  </g>
+  <g font-family="JetBrains Mono, monospace" font-size="13" letter-spacing="1">
+    {['HELLO', 'HOW', 'YOU'].map((g, i) => (
+      <g class="pop" style={`--d: ${550 + i * 500}ms`}>
+        <rect x="246" y={34 + i * 36} width="96" height="24" rx="4" stroke="#F2D06B" stroke-width="1.4" fill="#0F1A17" />
+        <text x="258" y={51 + i * 36} fill="#E8EFE9">{g}</text>
+      </g>
+    ))}
+  </g>
+  <g class="pop" style="--d: 2100ms">
+    <path d="M246 156 H372" stroke="#7A8F85" stroke-width="1" />
+    <text x="372" y="182" text-anchor="start" fill="#F2D06B" font-size="19" font-family="'Segoe UI', Tahoma, sans-serif" direction="rtl">مرحبا، كيف حالك؟</text>
+  </g>
+</svg>

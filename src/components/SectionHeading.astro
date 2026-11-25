@@ -1,0 +1,20 @@
+---
+interface Props {
+  num: string;
+  title: string;
+  note?: string;
+  id: string;
+}
+const { num, title, note, id } = Astro.props;
+---
+
+<header class="mb-10 md:mb-14">
+  <div class="flex items-baseline gap-4">
+    <span class="label text-yellow" data-reveal>{num} /</span>
+    <h2 id={id} class="font-sketch text-[2.75rem] leading-none md:text-[4rem]" data-write>{title}</h2>
+  </div>
+  <svg class="ml-[3.25rem] mt-2 h-3.5 w-48 md:w-52" viewBox="0 0 200 14" fill="none" aria-hidden="true" data-draw>
+    <path class="draw" style="--d: 500ms; --dur: 0.9s" pathLength="1" d="M3 9 C 45 3, 90 12, 135 6 S 185 4, 197 8" stroke="#F2D06B" stroke-width="3" stroke-linecap="round"></path>
+  </svg>
+  {note && <p class="mt-4 font-hand text-[1.75rem] text-muted" data-reveal style="--d: 300ms">{note}</p>}
+</header>

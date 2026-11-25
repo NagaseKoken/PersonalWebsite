@@ -1,0 +1,118 @@
+---
+import { profile } from '../data/site';
+
+// Hand-drawn neural net, generated at build time with a fixed seed so it never changes.
+let seed = 11;
+const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const layers = [3, 5, 4, 2];
+const xs = [34, 164, 294, 414];
+const nodes = layers.map((n, li) =>
+  Array.from({ length: n }, (_, i) => ({ x: xs[li], y: 160 + (i - (n - 1) / 2) * 60, layer: li })),
+);
+const edges: { d: string; a: [number, number]; b: [number, number]; delay: number }[] = [];
+for (let li = 0; li < layers.length - 1; li++) {
+  for (const a of nodes[li]) {
+    for (const b of nodes[li + 1]) {
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2 + (rand() * 8 - 4);
+      edges.push({
+        d: `M${a.x + 12} ${a.y} Q ${mx} ${my} ${b.x - 12} ${b.y}`,
+        a: [a.x + 12, a.y],
+        b: [b.x - 12, b.y],
+        delay: 300 + li * 260 + Math.round(rand() * 200),
+      });
+    }
+  }
+}
+const flatNodes = nodes.flat();
+const edgeData = JSON.stringify(edges.map((e) => [e.a, e.b]));
+
+const equations = [
+  { t: 'softmax(z)ᵢ = eᶻⁱ / Σ eᶻʲ', cls: 'left-[52%] top-[9%] -rotate-3 hidden md:block', speed: 0.12 },
+  { t: 'ReLU(x) = max(0, x)', cls: 'right-[3%] top-[22%] rotate-3 hidden md:block', speed: 0.2 },
+  { t: 'L = −Σ y · log ŷ', cls: 'right-[2%] top-[84%] -rotate-6 hidden md:block', speed: 0.08 },
+  { t: 'Attention(Q,K,V) = softmax(QKᵀ/√d)·V', cls: 'left-[40%] top-[88%] rotate-2 hidden lg:block', speed: 0.16 },
+  { t: '∂L/∂w', cls: 'left-[46%] top-[2%] -rotate-6 hidden md:block', speed: 0.22 },
+  { t: 'σ(x) = 1 / (1 + e⁻ˣ)', cls: 'left-[3%] top-[94%] rotate-3 hidden md:block', speed: 0.1 },
+];
+
+const pct = Math.round((profile.progress.value / profile.progress.max) * 1000) / 10;
+---
+
+<section id="top" class="relative flex min-h-[100svh] items-center overflow-hidden pt-28 pb-24 md:pt-32 md:pb-28" aria-labelledby="hero-name">
+  <!-- faint background equations -->
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    {equations.map((e, i) => (
+      <span
+        class={`absolute font-hand text-2xl text-chalk/15 md:text-[1.75rem] ${e.cls}`}
+        data-parallax={e.speed}
+        data-reveal
+        style={`--d: ${900 + i * 120}ms`}
+      >{e.t}</span>
+    ))}
+  </div>
+
+  <div class="container-x relative grid items-center gap-14 lg:grid-cols-[1.15fr_1fr]">
+    <div>
+      <p class="label text-faint" data-reveal style="--d: 0ms">Notebook entry #001 · 2026</p>
+      <h1 id="hero-name" class="mt-6 font-sketch text-[clamp(3.5rem,10vw,7.5rem)] leading-[0.92] tracking-tight">
+        <span class="block" data-write style="--d: 150ms">{profile.firstLine}</span>
+        <span class="block" data-write style="--d: 550ms">{profile.secondLine}</span>
+      </h1>
+      <p class="mt-7 max-w-[34rem] text-xl leading-relaxed text-muted md:text-2xl" data-reveal style="--d: 900ms">
+        <span class="text-chalk">{profile.role}.</span> {profile.tagline}
+      </p>
+      <p class="mt-7 flex flex-wrap items-baseline gap-x-5 gap-y-1" data-reveal style="--d: 1100ms">
+        <span class="font-hand text-[2.6rem] leading-none text-yellow">θ ← θ − η∇L(θ)</span>
+        <span class="font-hand text-2xl text-faint">← a little better every step</span>
+      </p>
+
+      <div class="mt-12 max-w-[27.5rem]" data-fill data-reveal style="--d: 1250ms">
+        <div class="mb-2.5 flex justify-between">
+          <span class="label text-chalk">{profile.progress.label}</span>
+          <span class="label text-muted">GPA {profile.progress.value.toFixed(2)} / {profile.progress.max.toFixed(2)}</span>
+        </div>
+        <div class="relative h-2.5 overflow-hidden rounded-full bg-line" role="img" aria-label={`GPA ${profile.progress.value} out of ${profile.progress.max}`}>
+          <div class="fill absolute inset-y-0 left-0 rounded-full bg-yellow" style={`width: ${pct}%`}></div>
+          {Array.from({ length: 9 }, (_, i) => (
+            <span class="absolute inset-y-0 w-0.5 bg-board/60" style={`left: ${(i + 1) * 10}%`}></span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <figure class="relative mx-auto w-full max-w-[460px]" aria-hidden="true">
+      <svg
+        class="w-full"
+        viewBox="0 0 448 330"
+        fill="none"
+        data-draw
+        data-net={edgeData}
+      >
+        <g stroke="#E8EFE9" stroke-opacity="0.32" stroke-width="1.2" stroke-linecap="round">
+          {edges.map((e) => <path class="draw" pathLength="1" d={e.d} style={`--d: ${e.delay}ms; --dur: 0.9s`} />)}
+        </g>
+        <g class="pulses"></g>
+        {flatNodes.map((n) => (
+          <circle
+            class="pop"
+            cx={n.x}
+            cy={n.y}
+            r="12"
+            fill="#0F1A17"
+            stroke={n.layer === layers.length - 1 ? '#F2D06B' : '#E8EFE9'}
+            stroke-width="2.2"
+            style={`--d: ${250 + n.layer * 260}ms`}
+          />
+        ))}
+      </svg>
+      <figcaption class="mt-3 text-center font-hand text-xl text-faint" data-reveal style="--d: 1600ms">
+        fig. 1 — a small network, still learning
+      </figcaption>
+    </figure>
+  </div>
+
+  <a href="#about" class="label absolute bottom-8 left-1/2 hidden -translate-x-1/2 text-faint transition-colors hover:text-chalk md:block" data-reveal style="--d: 1800ms">
+    scroll ↓
+  </a>
+</section>

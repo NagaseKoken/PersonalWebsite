@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import TrainingLog from '../components/TrainingLog.astro';
+import Experiments from '../components/Experiments.astro';
+import Contact from '../components/Contact.astro';
+---
+
+<Base>
+  <Nav />
+  <main class="relative z-10">
+    <Hero />
+    <About />
+    <TrainingLog />
+    <Experiments />
+    <Contact />
+  </main>
+</Base>
+
+<script>
+  import { initMotion } from '../scripts/motion';
+  initMotion();
+</script>

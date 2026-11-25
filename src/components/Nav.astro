@@ -1,0 +1,20 @@
+---
+const links = [
+  { href: '#about', label: 'About' },
+  { href: '#log', label: 'Training log' },
+  { href: '#experiments', label: 'Experiments' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<nav class="site-nav fixed inset-x-0 top-0 z-50 border-b border-transparent" aria-label="Main">
+  <div class="container-x flex items-center justify-between py-5">
+    <a href="#top" class="label text-chalk">~/al-naser</a>
+    <ul class="hidden gap-9 md:flex">
+      {links.map((l) => (
+        <li><a href={l.href} class="nav-link label link-u text-muted" data-nav={l.href.slice(1)}>{l.label}</a></li>
+      ))}
+    </ul>
+    <a href="#contact" class="label text-yellow md:hidden">Contact</a>
+  </div>
+</nav>

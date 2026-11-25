@@ -1,0 +1,29 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<section id="contact" class="container-x pt-28 md:pt-44" aria-labelledby="contact-title">
+  <SectionHeading num="04" title="Contact" id="contact-title" />
+
+  <p class="font-sketch text-[clamp(3rem,9vw,7rem)] leading-[0.95]" data-write>Let's build something.</p>
+  <p class="mt-7 max-w-xl text-xl leading-relaxed text-muted md:text-2xl" data-reveal style="--d: 300ms">
+    Open to AI and machine learning engineering roles.
+  </p>
+
+  <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4" data-reveal style="--d: 450ms">
+    <a
+      href={`mailto:${profile.email}`}
+      class="label rounded bg-yellow px-5 py-3.5 text-board transition-transform duration-300 hover:-translate-y-0.5"
+    >Email me →</a>
+    <a href={profile.links.linkedin} target="_blank" rel="noopener" class="label link-u text-muted">LinkedIn ↗</a>
+    <a href={profile.links.github} target="_blank" rel="noopener" class="label link-u text-muted">GitHub ↗</a>
+  </div>
+  <p class="label mt-5 text-faint normal-case tracking-normal" data-reveal style="--d: 550ms">{profile.email}</p>
+
+  <footer class="mt-32 flex flex-col gap-3 border-t border-line py-8 md:mt-40 md:flex-row md:items-center md:justify-between">
+    <span class="font-hand text-2xl text-faint">∇L(θ) → 0</span>
+    <span class="label text-faint">© {year} {profile.name}</span>
+  </footer>
+</section>

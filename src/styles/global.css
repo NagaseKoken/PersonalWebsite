@@ -1,0 +1,210 @@
+@import "@fontsource/cabin-sketch/700.css";
+@import "@fontsource/caveat/400.css";
+@import "@fontsource/caveat/700.css";
+@import "@fontsource/space-grotesk/400.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/700.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "tailwindcss";
+
+@theme {
+  --color-board: #0f1a17;
+  --color-board-2: #15231e;
+  --color-line: #2b3d36;
+  --color-chalk: #e8efe9;
+  --color-muted: #a3b5ac;
+  --color-faint: #7a8f85;
+  --color-yellow: #f2d06b;
+
+  --font-sketch: "Cabin Sketch", "Comic Sans MS", cursive;
+  --font-hand: "Caveat", cursive;
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-chalk: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-board);
+    color: var(--color-chalk);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background:
+      radial-gradient(60rem 40rem at 30% 8%, rgb(190 230 210 / 0.07), transparent 70%),
+      radial-gradient(50rem 30rem at 85% 55%, rgb(190 230 210 / 0.04), transparent 70%),
+      var(--color-board);
+  }
+  /* chalk dust */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.07;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.6 -0.55'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  ::selection { background: var(--color-yellow); color: var(--color-board); }
+  :focus-visible { outline: 2px dashed var(--color-yellow); outline-offset: 4px; border-radius: 4px; }
+  a { text-decoration: none; color: inherit; }
+}
+
+@layer components {
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    white-space: nowrap;
+  }
+  .container-x {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 768px) { .container-x { padding-inline: 2.5rem; } }
+  @media (min-width: 1280px) { .container-x { padding-inline: 0; } }
+
+  .link-u {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.3s var(--ease-out-expo), color 0.2s;
+  }
+  .link-u:hover { background-size: 100% 1px; color: var(--color-chalk); }
+}
+
+/* ---------- Motion (only when html.motion is set by JS and reduced motion is off) ---------- */
+
+/* fade-up reveal */
+.motion [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+  transition-delay: var(--d, 0ms);
+}
+.motion [data-reveal].is-in { opacity: 1; transform: none; }
+
+/* chalk-writing wipe for sketch headings */
+.motion [data-write] {
+  clip-path: inset(-20% 100% -20% 0);
+  transition: clip-path 1.2s var(--ease-chalk);
+  transition-delay: var(--d, 0ms);
+}
+.motion [data-write].is-in { clip-path: inset(-20% -6% -20% 0); }
+
+/* stroke drawing: paths use pathLength="1" */
+.motion [data-draw] .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur, 1.2s) var(--ease-chalk);
+  transition-delay: var(--d, 0ms);
+}
+.motion [data-draw].is-in .draw { stroke-dashoffset: 0; }
+
+/* pop-in for dots / nodes */
+.motion [data-draw] .pop {
+  opacity: 0;
+  transform: scale(0.2);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.4s ease, transform 0.6s var(--ease-out-expo);
+  transition-delay: var(--d, 0ms);
+}
+.motion [data-draw].is-in .pop { opacity: 1; transform: none; }
+
+/* progress bar fill */
+.motion [data-fill] .fill {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.6s var(--ease-out-expo) 0.6s;
+}
+.motion [data-fill].is-in .fill { transform: scaleX(1); }
+
+/* scroll-linked loss curve (driven by JS) */
+.motion .loss-path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.motion .loss-dot { opacity: 0; transform: scale(0.2); transform-box: fill-box; transform-origin: center; transition: opacity 0.3s, transform 0.5s var(--ease-out-expo); }
+.motion .loss-dot.is-on { opacity: 1; transform: none; }
+.motion .epoch-row { opacity: 0.35; }
+.motion .epoch-row.is-on { opacity: 1; }
+.epoch-row .epoch-num { transition: color 0.4s; }
+.motion .epoch-row.is-on .epoch-num { color: var(--color-yellow); }
+
+/* interactive loss chart */
+.loss-chart { cursor: crosshair; }
+/* hovering the chart finishes drawing it */
+.motion .loss-chart.is-hover .loss-path { stroke-dashoffset: 0 !important; transition: stroke-dashoffset 0.6s var(--ease-out-expo); }
+.motion .loss-chart.is-hover .loss-dot { opacity: 1; transform: none; }
+.loss-area { opacity: 0; transition: opacity 0.4s ease; }
+.loss-chart.is-hover .loss-area { opacity: 0.06; }
+.probe { opacity: 0; transition: opacity 0.2s ease; }
+.loss-chart.is-hover .probe { opacity: 1; }
+.dot-ring { opacity: 0; transform: scale(0.4); transform-box: fill-box; transform-origin: center; transition: opacity 0.25s, transform 0.45s var(--ease-out-expo); }
+.loss-dot.is-hot .dot-ring { opacity: 1; transform: none; }
+.dot-org { fill-opacity: 0; transition: fill-opacity 0.3s ease, fill 0.2s; }
+.loss-chart.is-hover .dot-org { fill-opacity: 0.85; }
+.loss-dot.is-hot .dot-org { fill: var(--color-yellow); fill-opacity: 1; }
+.readout { opacity: 0; transform: translate(-50%, calc(-100% - 14px)); transition: opacity 0.15s; }
+.readout.is-visible { opacity: 1; }
+.epoch-tip {
+  opacity: 0;
+  transform: translate(-50%, calc(-100% - 26px)) scale(0.96);
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s ease, transform 0.35s var(--ease-out-expo), left 0.4s var(--ease-out-expo), top 0.4s var(--ease-out-expo);
+}
+.epoch-tip.is-visible { opacity: 1; transform: translate(-50%, calc(-100% - 26px)) scale(1); }
+.epoch-row { transition: background-color 0.25s ease, opacity 0.5s ease; }
+.epoch-row.is-hot, .epoch-row:focus-visible { background-color: rgb(232 239 233 / 0.04); opacity: 1 !important; }
+.epoch-row.is-hot .epoch-num, .epoch-row:focus-visible .epoch-num { color: var(--color-yellow); }
+
+/* restore wipe (WaveFlow card) */
+.restore .murky { clip-path: inset(0 0 0 0); }
+.restore .divider { left: 100%; }
+.motion .restore .murky { transition: clip-path 1.8s var(--ease-chalk) 0.3s; }
+.motion .restore .divider { transition: left 1.8s var(--ease-chalk) 0.3s; }
+.restore.is-in .murky, html:not(.motion) .restore .murky { clip-path: inset(0 48% 0 0); }
+.restore.is-in .divider, html:not(.motion) .restore .divider { left: 52%; }
+
+/* signing arm (sign language card) */
+.sign-arm { transform-box: view-box; transform-origin: 180px 126px; }
+.motion .sign-scene.is-in .sign-arm { animation: sign-wave 2.4s var(--ease-chalk) infinite alternate; }
+@keyframes sign-wave {
+  0% { transform: rotate(-10deg); }
+  50% { transform: rotate(8deg) translateY(-3px); }
+  100% { transform: rotate(-2deg) translateX(-4px); }
+}
+
+/* experiment card hover */
+.exp-card { transition: border-color 0.3s, transform 0.4s var(--ease-out-expo); }
+.exp-card:hover { border-color: color-mix(in oklab, var(--color-yellow) 45%, var(--color-line)); transform: translateY(-3px); }
+
+/* nav */
+.site-nav { transition: background-color 0.3s, border-color 0.3s, backdrop-filter 0.3s; }
+.site-nav.is-scrolled {
+  background-color: rgb(15 26 23 / 0.82);
+  backdrop-filter: blur(10px);
+  border-color: var(--color-line);
+}
+.nav-link.is-active { color: var(--color-yellow); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

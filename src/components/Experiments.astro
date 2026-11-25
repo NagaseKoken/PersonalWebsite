@@ -1,0 +1,71 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import UnderwaterScene from './UnderwaterScene.astro';
+import ChequeScene from './ChequeScene.astro';
+import SignScene from './SignScene.astro';
+import { experiments } from '../data/site';
+---
+
+<section id="experiments" class="container-x pt-28 md:pt-40" aria-labelledby="exp-title">
+  <SectionHeading num="03" title="Experiments" id="exp-title" note="ideas, tested properly" />
+
+  <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    {experiments.map((x, i) => (
+      <article class="exp-card flex flex-col rounded-md border border-line bg-board-2 p-6 md:p-7" data-reveal style={`--d: ${i * 150}ms`}>
+        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <span class="label text-faint">{x.id}</span>
+          <span class:list={['label', x.shipped ? 'text-yellow' : 'text-muted']}>
+            {x.shipped ? '✓ ' : '◐ '}{x.status}
+          </span>
+        </div>
+
+        <div class="mt-5 aspect-[40/21] overflow-hidden rounded border border-line">
+          {x.visual === 'restore' ? (
+            <div class="restore relative h-full w-full" data-reveal-target>
+              <UnderwaterScene uid={`clear-${i}`} />
+              <div class="murky absolute inset-0 [filter:sepia(0.6)_hue-rotate(38deg)_saturate(0.5)_brightness(0.7)_contrast(0.72)_blur(1.2px)]">
+                <UnderwaterScene uid={`murky-${i}`} />
+              </div>
+              <div class="divider absolute inset-y-0 w-0.5 -translate-x-1/2 bg-chalk/90"></div>
+              <span class="label absolute left-3 top-2.5 text-[0.6875rem] text-chalk/80">input</span>
+              <span class="label absolute right-3 top-2.5 text-[0.6875rem] text-chalk">restored</span>
+            </div>
+          ) : x.visual === 'sign' ? (
+            <SignScene />
+          ) : (
+            <ChequeScene />
+          )}
+        </div>
+
+        <h3 class="mt-6 text-[1.75rem] font-bold leading-tight tracking-tight">{x.title}</h3>
+
+        <dl class="mt-5 space-y-5">
+          <div>
+            <dt class="label text-faint">Hypothesis</dt>
+            <dd class="mt-1.5 text-[1.0625rem] leading-relaxed text-muted">{x.hypothesis}</dd>
+          </div>
+          <div>
+            <dt class="label text-faint">Method</dt>
+            <dd class="mt-2 flex flex-wrap gap-2">{x.method.map((m) => <span class="chip">{m}</span>)}</dd>
+          </div>
+          <div>
+            <dt class="label text-faint">Result</dt>
+            <dd class="mt-0.5 font-hand text-[2rem] leading-tight text-yellow">{x.result}</dd>
+          </div>
+        </dl>
+
+        <div class="mt-auto flex flex-wrap items-center justify-between gap-4 pt-6">
+          {x.note && <span class="font-hand text-xl text-faint">{x.note}</span>}
+          {(x.links.length > 0 || x.codeSoon) && (
+            <span class="flex gap-6">
+              {x.codeSoon && <span class="label text-faint">Code soon</span>}
+              {x.links.map((l) => (
+                <a class="label link-u text-chalk" href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>
+              ))}
+            </span>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

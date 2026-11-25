@@ -1,0 +1,97 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { epochs } from '../data/site';
+
+// Loss curve: y falls exponentially as epochs go by. Loss = (TOP - y) / AMP.
+const W = 1000;
+const H = 250;
+const VH = H + 34;
+const TOP = 214, AMP = 184, X0 = 40, K = 230;
+const yAt = (x: number) => TOP - AMP * Math.exp(-(x - X0) / K);
+const lossAt = (x: number) => (TOP - yAt(x)) / AMP;
+let seed = 5;
+const jitter = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 1.6;
+let d = `M${X0} ${yAt(X0).toFixed(1)}`;
+for (let x = 50; x <= 980; x += 10) d += ` L${x} ${(yAt(x) + jitter()).toFixed(1)}`;
+const dotXs = [130, 420, 700, 930].slice(0, epochs.length);
+const points = epochs.map((e, i) => ({
+  ...e,
+  n: String(i + 1).padStart(2, '0'),
+  x: dotXs[i],
+  y: yAt(dotXs[i]),
+  loss: lossAt(dotXs[i]).toFixed(2),
+}));
+const chartData = JSON.stringify({ W, VH, TOP, AMP, X0, K, xs: dotXs });
+---
+
+<section id="log" class="container-x pt-28 md:pt-40" aria-labelledby="log-title" data-loss-section>
+  <SectionHeading num="02" title="Training log" id="log-title" note="loss ↓ as epochs ↑" />
+
+  <div class="loss-chart relative select-none" data-loss-chart={chartData}>
+    <svg class="w-full overflow-visible" viewBox={`0 0 ${W} ${VH}`} fill="none" aria-hidden="true">
+      <!-- axes -->
+      <path d={`M22 6 L23 ${H - 18} L${W - 4} ${H - 19}`} stroke="#7A8F85" stroke-width="1.6" stroke-linecap="round" />
+      <text x="34" y="18" fill="#7A8F85" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="1.5">LOSS</text>
+      <text x={W - 104} y={H + 12} fill="#7A8F85" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="1.5">EPOCHS →</text>
+
+      <!-- area under the curve, lights up on hover -->
+      <path class="loss-area" d={`${d} L980 ${H - 19} L${X0} ${H - 19} Z`} fill="#F2D06B" />
+
+      <path class="loss-path" pathLength="1" d={d} stroke="#E8EFE9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+
+      <!-- hover probe -->
+      <g class="probe">
+        <line class="probe-line" x1="0" x2="0" y1="8" y2={H - 19} stroke="#E8EFE9" stroke-opacity="0.35" stroke-width="1.2" stroke-dasharray="3 6" />
+        <line class="probe-h" x1="23" x2="0" y1="0" y2="0" stroke="#E8EFE9" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="3 6" />
+        <circle class="probe-dot" r="5" fill="#E8EFE9" />
+      </g>
+
+      {points.map((p, i) => (
+        <g class="loss-dot" data-x={p.x} data-i={i}>
+          <circle class="dot-ring" cx={p.x} cy={p.y} r="16" stroke="#F2D06B" stroke-width="1.5" />
+          <circle cx={p.x} cy={p.y} r="7" fill="#F2D06B" />
+          <text x={p.x - 10} y={p.y - 22} fill="#F2D06B" font-family="JetBrains Mono, monospace" font-size="16" class="dot-label hidden sm:block">
+            {p.n}<tspan class="dot-org" fill="#E8EFE9" dx="8">{p.short}</tspan>
+          </text>
+        </g>
+      ))}
+    </svg>
+
+    <!-- live readout that rides the curve -->
+    <div class="readout label pointer-events-none absolute whitespace-nowrap rounded-sm bg-board/90 px-2 py-1 text-[0.6875rem] text-muted" aria-hidden="true"></div>
+
+    <!-- epoch card, appears when the probe snaps to a point -->
+    <div class="epoch-tip pointer-events-none absolute z-10 w-[15.5rem] rounded-md border border-yellow/50 bg-board-2/95 p-4 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.6)] backdrop-blur-sm" aria-hidden="true">
+      {points.map((p) => (
+        <div class="tip-body hidden" data-tip={p.n}>
+          <p class="label text-yellow">Epoch {p.n} · {p.dates}</p>
+          <p class="mt-2 font-hand text-[1.7rem] leading-none text-chalk">{p.org}</p>
+          <p class="mt-1.5 text-[0.95rem] font-medium leading-snug text-muted">{p.role}</p>
+          <p class="label mt-3 text-faint">loss {p.loss}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+  <p class="mt-2 hidden font-hand text-xl text-faint md:block">hover the curve</p>
+
+  <ol class="mt-8">
+    {points.map((p, i) => (
+      <li
+        class="epoch-row grid gap-x-12 gap-y-2 rounded-sm border-t border-line py-7 outline-none md:-mx-4 md:grid-cols-[10rem_18rem_1fr_auto] md:px-4 md:py-8"
+        data-epoch={i}
+        tabindex="0"
+      >
+        <div class="flex gap-3 md:flex-col md:gap-2">
+          <span class="epoch-num label text-faint">Epoch {p.n}</span>
+          <span class="label text-muted">{p.dates}</span>
+        </div>
+        <div>
+          <h3 class="text-[1.375rem] font-bold leading-tight tracking-tight text-chalk md:text-[1.5rem]">{p.role}</h3>
+          <p class="font-hand text-[1.6rem] leading-tight text-muted">@ {p.org}</p>
+        </div>
+        <p class="max-w-[34rem] text-[1.0625rem] leading-relaxed text-muted">{p.text}</p>
+        <span class="label text-faint md:text-right">loss {p.loss}</span>
+      </li>
+    ))}
+  </ol>
+</section>

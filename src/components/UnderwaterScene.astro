@@ -1,0 +1,42 @@
+---
+interface Props { uid: string }
+const { uid } = Astro.props;
+---
+
+<svg viewBox="0 0 400 210" class="block h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <linearGradient id={`water-${uid}`} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a7fa6" />
+      <stop offset="1" stop-color="#073047" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="210" fill={`url(#water-${uid})`} />
+  <g fill="#ffffff" opacity="0.07">
+    <polygon points="60,0 95,0 40,210 0,210" />
+    <polygon points="170,0 190,0 150,210 120,210" />
+    <polygon points="300,0 330,0 290,210 250,210" />
+  </g>
+  <path d="M0 170 C 60 158, 120 176, 200 166 S 330 158, 400 170 V210 H0Z" fill="#c9a86a" />
+  <ellipse cx="320" cy="172" rx="38" ry="16" fill="#5b6b73" />
+  <ellipse cx="90" cy="176" rx="26" ry="11" fill="#4c5a61" />
+  <g stroke="#3fbf7f" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M150 170 C 140 140, 162 120, 150 92" />
+    <path d="M162 170 C 172 146, 156 128, 168 104" />
+    <path d="M370 172 C 360 150, 378 132, 368 112" />
+  </g>
+  <g>
+    <path d="M220 168 C 210 140, 228 128, 222 112 C 236 124, 238 140, 250 132 C 252 150, 246 160, 252 168Z" fill="#ff7a59" />
+    <path d="M262 168 C 258 150, 270 142, 268 128 C 280 140, 284 152, 290 168Z" fill="#e84a7f" />
+    <circle cx="112" cy="156" r="12" fill="#ffb347" />
+    <circle cx="128" cy="160" r="8" fill="#ff7a59" />
+  </g>
+  <g>
+    <ellipse cx="96" cy="72" rx="18" ry="9" fill="#ffd166" />
+    <polygon points="112,72 124,63 124,81" fill="#ffd166" />
+    <circle cx="88" cy="70" r="1.8" fill="#073047" />
+    <ellipse cx="270" cy="58" rx="13" ry="6.5" fill="#f4f1de" />
+    <polygon points="282,58 291,52 291,64" fill="#f4f1de" />
+    <ellipse cx="300" cy="88" rx="10" ry="5" fill="#f4f1de" opacity="0.85" />
+    <polygon points="309,88 316,83 316,93" fill="#f4f1de" opacity="0.85" />
+  </g>
+</svg>
