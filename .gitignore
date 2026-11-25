@@ -42,9 +42,9 @@ AI_Engineer.pdf
 
 # --- AI-assistant skill installs (not part of the site) ---
 # Remove these lines if you want the skills committed with the repo.
-skills/
-data/
-skills-lock.json
+/skills/
+/data/
+/skills-lock.json
 .adal/
 .agents/
 .aider-desk/
