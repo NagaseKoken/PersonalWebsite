@@ -22,7 +22,7 @@ const {
     <meta name="theme-color" content="#0F1A17" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
     <script is:inline>
       // Turn on motion only when allowed; without JS everything stays visible.
       // ?nomotion shows the finished page (handy for screenshots).
